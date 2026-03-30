@@ -1,15 +1,23 @@
 #!/bin/bash
-# Script 4: Log Analyzer
+# Script 4: Log File Analyzer 
 
-FILE="/var/log/syslog"
+# Input values LOGFILE=$1 KEYWORD=${2:-"error"}
 COUNT=0
 
-while read line
-do
-    if echo "$line" | grep -i "error"
-    then
-        COUNT=$((COUNT+1))
-    fi
-done < $FILE
+# Check if file exists
+if [ ! -f "$LOGFILE" ]; then
+echo "Error: File $LOGFILE not found."
+exit 1
+fi
 
-echo "Total errors: $COUNT"
+# Read file line by line while IFS= read -r LINE; do
+if echo "$LINE" | grep -iq "$KEYWORD"; then COUNT=$((COUNT + 1))
+fi
+done < "$LOGFILE"
+
+# Summary output
+echo "Keyword '$KEYWORD' found $COUNT times in $LOGFILE"
+
+# Last matching lines
+grep -i "$KEYWORD" "$LOGFILE" | tail -5
+
